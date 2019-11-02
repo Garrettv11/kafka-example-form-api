@@ -1,0 +1,57 @@
+{
+  "defaultEnv": "local-dev",
+  "local-dev": {
+    "driver": "mysql",
+    "user": "root",
+    "password": "3k293cp0tjnMq",
+    "host": "localhost",
+    "port": "3307",
+    "schema": "public",
+    "multipleStatements": true,
+    "sql-file": true
+  },
+  "dev-ecs": {
+    "driver": "mysql",
+    "user": "admin",
+    "password": "n0r4123!",
+    "host": "db-nora-dev.cti10lnrh4rb.us-west-2.rds.amazonaws.com",
+    "port": "3307",
+    "schema": "public",
+    "multipleStatements": false,
+    "sql-file": true,
+    "ssl": "Amazon RDS"
+  },
+  "stage-ecs": {
+    "driver": "mysql",
+    "user": "admin",
+    "password": "n0r4123!",
+    "host": "db-nora-stage.cti10lnrh4rb.us-west-2.rds.amazonaws.com",
+    "port": "3306",
+    "schema": "public",
+    "multipleStatements": true,
+    "sql-file": true,
+    "ssl": "Amazon RDS"
+  },
+  "sandbox-ecs": {
+    "driver": "mysql",
+    "user": "admin",
+    "password": "n0r4123!",
+    "host": "db-nora-sandbox.science37.com",
+    "port": "3306",
+    "schema": "public",
+    "multipleStatements": true,
+    "sql-file": true,
+    "ssl": "Amazon RDS"
+  },
+  "other": {
+    "driver": "mysql",
+    "user": { "ENV" : "DB_USER" },
+    "password": { "ENV" : "DB_PASSWORD" },
+    "host": { "ENV" : "DB_HOST" },
+    "port": { "ENV" : "DB_PORT" },
+    "schema": "public",
+    "multipleStatements": true,
+    "sql-file": true,
+    "ssl": "Amazon RDS"
+  }
+}
