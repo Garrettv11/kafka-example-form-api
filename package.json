@@ -1,7 +1,7 @@
 {
-  "name": "hapi-starter-kit",
+  "name": "form-api",
   "version": "0.0.2",
-  "description": "Example Hapi Service",
+  "description": "form api",
   "main": "server.js",
   "scripts": {
     "start": "node .",
@@ -20,9 +20,7 @@
     "deepmerge": "^3.3.0",
     "dotenv": "^8.1.0",
     "hapi-swagger": "^10.0.2",
-    "nora-correlation-id-plugin": "git+ssh://git@github.com/Science37/nora-correlation-id-plugin#v1.0.2",
-    "nora-logger-plugin": "git+ssh://git@github.com/Science37/nora-logger-plugin.git#v1.0.4",
-    "nora-mysql-plugin": "git+ssh://git@github.com/Science37/nora-mysql-plugin.git#v2.0"
+    "nora-correlation-id-plugin": "git+ssh://git@github.com/Science37/nora-correlation-id-plugin#v1.0.2"
   },
   "devDependencies": {
     "eslint": "^5.14.1",

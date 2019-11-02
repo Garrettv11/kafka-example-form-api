@@ -1,6 +1,4 @@
 const Hapi = require('@hapi/hapi');
-const exampleRoutes = require(__dirname + '/src/routes/v2/hapistarterkit/MyModel.js');
-const loopRoutes = require(__dirname + '/src/routes/v2/hapistarterkit/loop.js');
 const healthcheckRoute = require(__dirname + '/src/routes/version.js');
 const plugins = require(__dirname + '/src/plugins/plugins.js');
 const config = require(__dirname + '/config.js');
@@ -15,8 +13,6 @@ const start = async () => {
     // register plugins
     await server.register(plugins);
     // add routes
-    server.route(exampleRoutes);
-    server.route(loopRoutes);
     server.route(healthcheckRoute);
     // start server
     await server.start();
