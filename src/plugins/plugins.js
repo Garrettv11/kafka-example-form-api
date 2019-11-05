@@ -1,9 +1,7 @@
 const Inert = require('@hapi/inert');
 const Vision = require('@hapi/vision');
 const HapiSwagger = require('hapi-swagger');
-const { version, name: appName } = require(__dirname + '/../../package');
-const noraCorrelationId = require('nora-correlation-id-plugin');
-const env = process.env.NODE_ENV ? process.env.NODE_ENV: 'dev-docker';
+const { version } = require(__dirname + '/../../package');
 
 const plugins = [
   Inert,
@@ -17,7 +15,6 @@ const plugins = [
       },
     },
   },
-  { plugin: noraCorrelationId, options: { env, appName } },
 ];
 
 module.exports = plugins;
