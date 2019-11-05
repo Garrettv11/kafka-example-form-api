@@ -6,15 +6,6 @@ WORKDIR /usr/src/app
 
 RUN apk update && apk upgrade && \
     apk add --no-cache git openssh
-
-ARG RSA
-
-RUN mkdir /root/.ssh/ && \
-    echo "${RSA}" > /root/.ssh/id_rsa && \
-    chmod 600 /root/.ssh/id_rsa && \
-    touch /root/.ssh/known_hosts && \
-    ssh-keyscan github.com>> /root/.ssh/known_hosts
-
 COPY package.json .
 COPY package-lock.json .
 RUN npm install
