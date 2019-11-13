@@ -1,18 +1,24 @@
-const FormDao = require(__dirname + '/../dao/Form.js');
-const Boom = require('@hapi/boom');
-const Joi = require('@hapi/joi');
 const uuidv4 = require('uuid/v4');
-const config = require(__dirname + '/../../config.js');
+// const config = require(__dirname + '/../../config.js');
 const { FormVersion, FormDefaultAuthor } = require(__dirname + '/../models/Form.js');
 const crypto = require('crypto');
 
+/**
+* @description Creates a version hash for a form
+* @param {String} formContents - The form contents
+* @return {String} - sha1 hash
+*/
+const makeRevisionHash = formContents => {
+  return crypto
+    .createHash('sha1')
+    .update(formContents)
+    .digest('hex');
+};
 /*
  * PUBLIC METHODS
  */
 
 module.exports = {};
-
-
 
 /**
 * @description finds the Form instance with the given id
@@ -37,20 +43,15 @@ module.exports.find = async (page, request) => {
 
 /**
  * @description Creates a new object with given data
- * @param {Object} FormLocation - new object definition
+ * @param {Object} form - form to submit
  * @param {Object} request - Hapi Request interface
  * @return {Promise}
  */
-module.exports.create = async (FormLocation, request) => {
-  const { trialUuid, form } = FormLocation;
+module.exports.create = async (form, request) => {
 
   // Check that form is an object. This will be taken care of with future Joi validation
-  if (typeof form !== 'object') throw Boom.badRequest('Contents of form must be an object');
-  let { formUuid } = FormLocation;
-  if (!formUuid) formUuid = uuidv4();
-  const filename = `${formUuid}.json`;
-  const s3Bucket = config.aws.s3.bucket;
-  const s3Key = `trials/${trialUuid}/forms/${filename}`;
+
+  const formUuid = uuidv4();
 
   form.metadata = {
     formUuid: formUuid,
@@ -60,20 +61,7 @@ module.exports.create = async (FormLocation, request) => {
     revisionHash: makeRevisionHash(JSON.stringify(form)),
   };
 
-  await FormDao.s3PutObject(s3Bucket, s3Key, form, request);
-  const locationDetails = [trialUuid, formUuid, form.name, s3Bucket, s3Key];
+  // now I want to submit this to kafka
+  // TODO: send to KAFKA
 
-  try {
-    const returnUuid = await FormDao.create(formUuid, locationDetails, request);
-    request.log(['s3', 'forms', 'debug'], {
-      message: 'Successfully inserted into FormLocation.',
-    });
-    return { formUuid: returnUuid };
-  }
-  catch (err) {
-    const error = new Error(`Unable to insert into FormLocation: ${JSON.stringify(err.message)}`);
-    request.log(['s3', 'forms', 'error'], error);
-    await FormDao.s3DeleteObject(s3Bucket, s3Key, request);
-    throw error;
-  }
 };

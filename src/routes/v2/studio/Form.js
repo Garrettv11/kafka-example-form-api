@@ -80,92 +80,92 @@ module.exports = [
       return await FormController.findById(formUuid, request);
     },
   },
-//   {
-//     method: 'GET',
-//     path: `/${apiVersion}/${svcName}/forms`,
-//     options: {
-//       tags: ['api'],
-//       description: 'Get a filterable list of forms. Returns the latest version for each form.',
-//       validate: {
-//         query: getPageQuery(['title'])
-//           // Append Form filtering query params
-//           .append({ query: FormQuery}),
-//         failAction: failAction('request'),
-//       },
-//       response: {
-//         status: {
-//           200: getPageModel(FormGetAllResponse),
-//           403: Joi.any(),
-//           404: Joi.any(),
-//         },
-//         failAction: failAction('response'),
-//       },
-//       log: { collect: true },
-//       auth: false,
-//     },
-//     handler: async (request, h) => {
-//       return await FormController.find(request.query, request);
-//     },
-//   },
-//   {
-//     method: 'PUT',
-//     path: `/${apiVersion}/${svcName}/forms/{formUuid}`,
-//     options: {
-//       tags: ['api'],
-//       description: 'Update a form by the supplied uuid.',
-//       validate: {
-//         params: {
-//           formUuid: FormLocationProperties.formUuid,
-//         },
-//         payload: Form,
-//         failAction: failAction('request'),
-//       },
-//       pre: FormController.FormGuardrails,
-//       response: {
-//         status: {
-//           200: FormUpdateResponse,
-//           400: Joi.any(),
-//           403: Joi.any(),
-//           404: Joi.any(),
-//         },
-//         failAction: failAction('response'),
-//       },
-//       log: { collect: true },
-//       auth: false,
-//     },
-//     handler: async (request, h) => {
-//       const formUuid = request.params.formUuid;
-//       return await FormController.update(formUuid, request.payload, request);
-//     },
-//   },
-//   {
-//     method: 'DELETE',
-//     path: `/${apiVersion}/${svcName}/forms/{formUuid}`,
-//     options: {
-//       tags: ['api'],
-//       description: 'Delete the form that has the supplied uuid.',
-//       validate: {
-//         params: {
-//           formUuid: FormLocationProperties.formUuid,
-//         },
-//         failAction: failAction('request'),
-//       },
-//       response: {
-//         status: {
-//           200: Joi.any().empty(),
-//           400: Joi.any(),
-//           403: Joi.any(),
-//           404: Joi.any(),
-//         },
-//         failAction: failAction('response'),
-//       },
-//       log: { collect: true },
-//       auth: false,
-//     },
-//     handler: async (request, h) => {
-//       const formUuid = request.params.formUuid;
-//       return await FormController.delete(formUuid, request);
-//     },
-//   },
+  //   {
+  //     method: 'GET',
+  //     path: `/${apiVersion}/${svcName}/forms`,
+  //     options: {
+  //       tags: ['api'],
+  //       description: 'Get a filterable list of forms. Returns the latest version for each form.',
+  //       validate: {
+  //         query: getPageQuery(['title'])
+  //           // Append Form filtering query params
+  //           .append({ query: FormQuery}),
+  //         failAction: failAction('request'),
+  //       },
+  //       response: {
+  //         status: {
+  //           200: getPageModel(FormGetAllResponse),
+  //           403: Joi.any(),
+  //           404: Joi.any(),
+  //         },
+  //         failAction: failAction('response'),
+  //       },
+  //       log: { collect: true },
+  //       auth: false,
+  //     },
+  //     handler: async (request, h) => {
+  //       return await FormController.find(request.query, request);
+  //     },
+  //   },
+  //   {
+  //     method: 'PUT',
+  //     path: `/${apiVersion}/${svcName}/forms/{formUuid}`,
+  //     options: {
+  //       tags: ['api'],
+  //       description: 'Update a form by the supplied uuid.',
+  //       validate: {
+  //         params: {
+  //           formUuid: FormLocationProperties.formUuid,
+  //         },
+  //         payload: Form,
+  //         failAction: failAction('request'),
+  //       },
+  //       pre: FormController.FormGuardrails,
+  //       response: {
+  //         status: {
+  //           200: FormUpdateResponse,
+  //           400: Joi.any(),
+  //           403: Joi.any(),
+  //           404: Joi.any(),
+  //         },
+  //         failAction: failAction('response'),
+  //       },
+  //       log: { collect: true },
+  //       auth: false,
+  //     },
+  //     handler: async (request, h) => {
+  //       const formUuid = request.params.formUuid;
+  //       return await FormController.update(formUuid, request.payload, request);
+  //     },
+  //   },
+  //   {
+  //     method: 'DELETE',
+  //     path: `/${apiVersion}/${svcName}/forms/{formUuid}`,
+  //     options: {
+  //       tags: ['api'],
+  //       description: 'Delete the form that has the supplied uuid.',
+  //       validate: {
+  //         params: {
+  //           formUuid: FormLocationProperties.formUuid,
+  //         },
+  //         failAction: failAction('request'),
+  //       },
+  //       response: {
+  //         status: {
+  //           200: Joi.any().empty(),
+  //           400: Joi.any(),
+  //           403: Joi.any(),
+  //           404: Joi.any(),
+  //         },
+  //         failAction: failAction('response'),
+  //       },
+  //       log: { collect: true },
+  //       auth: false,
+  //     },
+  //     handler: async (request, h) => {
+  //       const formUuid = request.params.formUuid;
+  //       return await FormController.delete(formUuid, request);
+  //     },
+  //   },
 
 ];
