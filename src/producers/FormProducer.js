@@ -1,56 +1,70 @@
 const kafka = require('kafka-node');
-const KeyedMessage = kafka.KeyedMessage
+const KeyedMessage = kafka.KeyedMessage;
 const Promise = require('bluebird');
 const TOPIC_FORM_CREATE = 'Form-Create';
 const TOPIC_FORM_EDIT = 'Form-Edit';
+
+/**
+ * @classdesc Form Producer that pushes updates to Kafka.
+ * @class
+ */
 class FormProducer {
   /**
   * Create S3NORA SDK.
   * @constructor
-  * @param String kafkaServer - address of kafka server
+  * @param {String} kafkaServer - address of kafka server
   */
   constructor(kafkaServer) {
     const Producer = kafka.Producer;
     const client = new kafka.Client(kafkaServer);
     this.producer = Promise.promisifyAll(new Producer(client));
     this.isReady = false;
-    
-    this.producer.on('ready', async function() {
+
+    this.producer.on('ready', async () => {
       console.log('Form producer is operational');
       this.isReady = true;
     });
-    
-    this.producer.on('error', function(err) {
+
+    this.producer.on('error', err => {
       console.log('Form Producer error is :', err);
       throw err;
     });
   }
-
+  /**
+  * @description Creates a form.
+  * @param {Object} form - form to create
+  */
   async createForm(form) {
-    const createFormKM = new KeyedMessage(form.metaData.formUuid, JSON.stringify(form)),
-    payloads = [
-        { topic: TOPIC_FORM_CREATE, messages: createFormKM},
+    const createFormKM = new KeyedMessage(form.metaData.formUuid, JSON.stringify(form));
+    const payloads = [
+      { topic: TOPIC_FORM_CREATE, messages: createFormKM },
     ];
     if (this.isReady) {
       await this.producer.sendAsync(payloads);
-    } else {
-        // the exception handling can be improved, for example schedule this message to be tried again later on
-        console.error("sorry, FormProducer is not ready yet, failed to produce message to Kafka.");
     }
-  };
-
+    else {
+      // the exception handling can be improved, for example schedule this message to be tried again later on
+      console.error('sorry, FormProducer is not ready yet, failed to produce message to Kafka.');
+    }
+  }
+  /**
+  * @description Updates a form.
+  * @param {Object} form - form to create
+  */
   async updateForm(form) {
-    const createFormKM = new KeyedMessage(form.metaData.formUuid, JSON.stringify(form)),
-    payloads = [
-        { topic: TOPIC_FORM_EDIT, messages: createFormKM, partition: form.metaData.formUuid},
+    const createFormKM = new KeyedMessage(form.metaData.formUuid, JSON.stringify(form));
+    const payloads = [
+      { topic: TOPIC_FORM_EDIT, messages: createFormKM, partition: form.metaData.formUuid },
     ];
     if (this.isReady) {
       await this.producer.sendAsync(payloads);
-    } else {
+    }
+    else {
       // the exception handling can be improved, for example schedule this message to be tried again later on
-      console.error("sorry, FormProducer is not ready yet, failed to produce message to Kafka.");
+      console.error('sorry, FormProducer is not ready yet, failed to produce message to Kafka.');
       throw new Error('FormProducer not yet ready');
     }
-  };
-
+  }
 }
+
+module.exports = FormProducer;
