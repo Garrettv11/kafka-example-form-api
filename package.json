@@ -19,7 +19,9 @@
     "@hapi/wreck": "^15.0.2",
     "deepmerge": "^3.3.0",
     "dotenv": "^8.1.0",
-    "hapi-swagger": "^10.0.2"
+    "hapi-swagger": "^10.0.2",
+    "kafka-node": "^5.0.0",
+    "bluebird": "^3.7.1"
   },
   "devDependencies": {
     "eslint": "^5.14.1",
