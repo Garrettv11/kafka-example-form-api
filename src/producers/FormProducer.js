@@ -1,8 +1,10 @@
 const kafka = require('kafka-node');
 const KeyedMessage = kafka.KeyedMessage;
 const Promise = require('bluebird');
-const TOPIC_FORM_CREATE = 'Form-Create';
-const TOPIC_FORM_EDIT = 'Form-Edit';
+const TOPIC_FORM_CREATE = 'FormCreate';
+const TOPIC_FORM_EDIT = 'FormEdit';
+
+// TODO: might want to split this off to a high level producer for creates since it doesn't depend on a partition
 
 /**
  * @classdesc Form Producer that pushes updates to Kafka.
@@ -10,13 +12,13 @@ const TOPIC_FORM_EDIT = 'Form-Edit';
  */
 class FormProducer {
   /**
-  * Create S3NORA SDK.
+  * Create FormProducer.
   * @constructor
-  * @param {String} kafkaServer - address of kafka server
+  * @param {String} kafkaHost - address of kafka server
   */
-  constructor(kafkaServer) {
+  constructor(kafkaHost) {
+    const client = new kafka.KafkaClient({kafkaHost});
     const Producer = kafka.Producer;
-    const client = new kafka.Client(kafkaServer);
     this.producer = Promise.promisifyAll(new Producer(client));
     this.isReady = false;
 
@@ -35,7 +37,7 @@ class FormProducer {
   * @param {Object} form - form to create
   */
   async createForm(form) {
-    const createFormKM = new KeyedMessage(form.metaData.formUuid, JSON.stringify(form));
+    const createFormKM = new KeyedMessage(form.metadata.formUuid, JSON.stringify(form));
     const payloads = [
       { topic: TOPIC_FORM_CREATE, messages: createFormKM },
     ];
@@ -52,9 +54,9 @@ class FormProducer {
   * @param {Object} form - form to create
   */
   async updateForm(form) {
-    const createFormKM = new KeyedMessage(form.metaData.formUuid, JSON.stringify(form));
+    const updateFormKM = new KeyedMessage(form.metadata.formUuid, JSON.stringify(form));
     const payloads = [
-      { topic: TOPIC_FORM_EDIT, messages: createFormKM, partition: form.metaData.formUuid },
+      { topic: TOPIC_FORM_EDIT, messages: updateFormKM, partition: form.metadata.formUuid },
     ];
     if (this.isReady) {
       await this.producer.sendAsync(payloads);

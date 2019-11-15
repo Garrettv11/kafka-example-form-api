@@ -1,7 +1,10 @@
 const Hapi = require('@hapi/hapi');
 const healthcheckRoute = require(__dirname + '/src/routes/version.js');
+const formRoutes = require(__dirname + '/src/routes/v2/studio/Form.js');
 const plugins = require(__dirname + '/src/plugins/plugins.js');
 const config = require(__dirname + '/config.js');
+const FormProducer = require(__dirname + '/src/producers/FormProducer.js');
+const FormCreateConsumer = require(__dirname + '/src/consumers/FormCreateConsumer.js');
 
 /**
 * @description registers server plugins and starts a hapi server
@@ -14,7 +17,9 @@ const start = async () => {
     await server.register(plugins);
     // add routes
     server.route(healthcheckRoute);
-    // start server
+    server.route(formRoutes);
+    server.app.formProducer = new FormProducer(config.kafkaServer);
+    server.app.formCreateConsumer = new FormCreateConsumer(config.kafkaServer);
     await server.start();
     console.log('Server running at:', server.info.uri);
     console.log('Swagger definition available at:', server.info.uri + '/swagger.json');

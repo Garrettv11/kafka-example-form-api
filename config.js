@@ -18,6 +18,12 @@ config['dev-docker'] = {
     host: '0.0.0.0',
     port: 6045,
   },
+  kafkaServer: 'kafka:9092',
+  aws: {
+    bucket: 'form-bucket',
+    region: 'us-west-2',
+    endpoint: 'localstack:4572',
+  },
 };
 
 // merge the default config with the environment-specific config

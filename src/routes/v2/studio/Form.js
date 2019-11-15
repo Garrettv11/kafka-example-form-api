@@ -1,4 +1,4 @@
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const {
   Form,
   FormGetResponse,
@@ -46,8 +46,8 @@ module.exports = [
       auth: false,
     },
     handler: async (request, h) => {
-      const data = await FormController.create(request.payload, request);
-      return h.response(data).code(201);
+      await FormController.create(request.payload, request);
+      return h.response().code(200);
     },
   },
   {

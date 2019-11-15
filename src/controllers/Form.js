@@ -60,8 +60,7 @@ module.exports.create = async (form, request) => {
     timestamp: new Date().toISOString(),
     revisionHash: makeRevisionHash(JSON.stringify(form)),
   };
-
   // now I want to submit this to kafka
-  // TODO: send to KAFKA
+  await request.server.app.formProducer.createForm(form);
 
 };
