@@ -22,7 +22,10 @@ config['dev-docker'] = {
   aws: {
     bucket: 'form-bucket',
     region: 'us-west-2',
-    endpoint: 'localstack:4572',
+    endpoint: 'http://localstack:4572',
+  },
+  elasticSearch: {
+    host: 'http://es01:9200',
   },
 };
 
