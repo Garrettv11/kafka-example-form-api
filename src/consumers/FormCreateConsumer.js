@@ -33,7 +33,7 @@ class FormCreateConsumer {
       const form = JSON.parse(message.value);
       try {
         await FormDao.s3PutObject(config.aws.bucket, form.name + '.json', form);
-        await ElasticSearchDao.addDocumentWithIdToIndex('Form', form.metadata.formUuid, form);
+        await ElasticSearchDao.addDocumentWithIdToIndex('form', form.metadata.formUuid, form);
       }
       catch (error) {
         console.log('error processing form:', error);

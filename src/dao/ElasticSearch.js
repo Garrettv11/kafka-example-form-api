@@ -13,7 +13,7 @@ module.exports.addDocumentWithIdToIndex = async (index, id, document) => {
     await client.indices.create({index});
   }
   // let's add our data using our index
-  await client.client({
+  await client.index({
     index,
     id,
     body: document,
