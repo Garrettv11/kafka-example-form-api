@@ -25,7 +25,7 @@ config['dev-docker'] = {
     endpoint: 'http://localstack:4572',
   },
   elasticSearch: {
-    host: 'http://es01:9200',
+    host: 'es01:9200',
   },
 };
 

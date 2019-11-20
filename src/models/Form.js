@@ -1,6 +1,7 @@
 
 const Joi = require('@hapi/joi');
 const FormDefaultAuthor = 'Form Service';
+const FormVersion = 'nora.science37.com/schema/form-v2';
 
 // Form
 const FormMetaData = Joi.object().keys({
@@ -42,6 +43,7 @@ module.exports = {
   Form,
   FormMetaData,
   FormDefaultAuthor,
+  FormVersion,
 
   // Requests and Responses
   FormGetResponse,

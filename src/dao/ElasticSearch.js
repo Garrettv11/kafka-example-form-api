@@ -6,7 +6,6 @@ const client = new elasticsearch.Client({
 });
 
 module.exports.addDocumentWithIdToIndex = async (index, id, document) => {
-  console.log('my elastic host is :', config.elasticSearch.host);
   const exists = await client.indices.exists({index});
   if (!exists) {
     // create this index
@@ -18,4 +17,12 @@ module.exports.addDocumentWithIdToIndex = async (index, id, document) => {
     id,
     body: document,
   });
+};
+
+module.exports.doesDocumentExist = async (index, id) => {
+  const result = await client.exists({
+    index,
+    id,
+  });
+  return result;
 };

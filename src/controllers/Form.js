@@ -2,6 +2,8 @@ const uuidv4 = require('uuid/v4');
 // const config = require(__dirname + '/../../config.js');
 const { FormVersion, FormDefaultAuthor } = require(__dirname + '/../models/Form.js');
 const crypto = require('crypto');
+const FormDao = require(__dirname + '/../dao/Form.js');
+const config = require(__dirname + '/../../config.js');
 
 /**
 * @description Creates a version hash for a form
@@ -27,18 +29,14 @@ module.exports = {};
 * @return {Promise}
 */
 module.exports.findById = async (formUuid, request) => {
-  // TODO: implement
-  return null;
-};
-
-/**
-   * @description Retrieves a ordered, paginated list of objects
-   * @param {Object} page - Page parameters
-   * @param {Object} request - Hapi Request interface
-   * @return {Promise} A page object containing the list of objects and set of cursors
-   */
-module.exports.find = async (page, request) => {
-  // TODO implement
+  console.log('+++ find by id');
+  const s3Key = formUuid + '.json';
+  const data = await FormDao.s3GetObject(config.aws.bucket, s3Key);
+  let form = data.Body.toString('utf-8');
+  if (typeof form !== 'object') form = JSON.parse(form);
+  form.metadata.versionId = data.VersionId;
+  console.log('my form is :', form);
+  return form;
 };
 
 /**
