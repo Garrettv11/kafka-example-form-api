@@ -26,3 +26,11 @@ module.exports.doesDocumentExist = async (index, id) => {
   });
   return result;
 };
+
+module.exports.updateDocumentWithIdInIndex = async (index, id, document) => {
+  await client.update({
+    index,
+    id,
+    body: document,
+  });
+};

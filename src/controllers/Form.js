@@ -62,3 +62,34 @@ module.exports.create = async (form, request) => {
   await request.server.app.formProducer.createForm(form);
 
 };
+
+/**
+* @description finds the Form instance with the given id
+* @param {Number} formUuid - uuid of Form instance
+* @param {Object} request - Hapi Request interface
+* @return {Promise}
+*/
+module.exports.findById = async (formUuid, request) => {
+  console.log('+++ find by id');
+  const s3Key = formUuid + '.json';
+  const data = await FormDao.s3GetObject(config.aws.bucket, s3Key);
+  let form = data.Body.toString('utf-8');
+  if (typeof form !== 'object') form = JSON.parse(form);
+  form.metadata.versionId = data.VersionId;
+  console.log('my form is :', form);
+  return form;
+};
+
+/**
+ * @description Updates
+ * @param {Number} formUuid - uuid of Form instance
+ * @param {Object} form - form to update
+ * @param {Object} request - Hapi Request interface
+ * @return {Promise}
+ */
+module.exports.update = async (formUuid, form, request) => {
+  // to make it extra clear which form we're updating
+  form.metadata.formUuId = formUuid;
+  console.log('I AM CALLING UPDATE IN CONTROLLER');
+  await request.server.app.formProducer.updateForm(form);
+};

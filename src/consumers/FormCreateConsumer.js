@@ -25,7 +25,6 @@ class FormCreateConsumer {
         autoCommit: false,
       },
     ));
-    this.isReady = false;
 
     this.consumer.on('message', async message => {
       console.log('the message being processed is :', JSON.stringify(message));
@@ -46,18 +45,17 @@ class FormCreateConsumer {
           await ElasticSearchDao.addDocumentWithIdToIndex('form', form.metadata.formUuid, form);
         }
         // everything has been submitted - commit
+        // TODO: send a socket message to notify user of success
         await this.consumer.commit();
       }
       catch (error) {
         console.log('error processing form:', error);
         throw error;
       }
-      // TODO: write search details to Elastic Search
-      // if everything goes right, commit
     });
 
     this.consumer.on('error', err => {
-      console.log('Form Producer error is :', err);
+      console.log('Form Create Producer error is :', err);
       throw err;
     });
   }

@@ -107,37 +107,40 @@ module.exports = [
   //       return await FormController.find(request.query, request);
   //     },
   //   },
-  //   {
-  //     method: 'PUT',
-  //     path: `/${apiVersion}/${svcName}/forms/{formUuid}`,
-  //     options: {
-  //       tags: ['api'],
-  //       description: 'Update a form by the supplied uuid.',
-  //       validate: {
-  //         params: {
-  //           formUuid: FormLocationProperties.formUuid,
-  //         },
-  //         payload: Form,
-  //         failAction: failAction('request'),
-  //       },
-  //       pre: FormController.FormGuardrails,
-  //       response: {
-  //         status: {
-  //           200: FormUpdateResponse,
-  //           400: Joi.any(),
-  //           403: Joi.any(),
-  //           404: Joi.any(),
-  //         },
-  //         failAction: failAction('response'),
-  //       },
-  //       log: { collect: true },
-  //       auth: false,
-  //     },
-  //     handler: async (request, h) => {
-  //       const formUuid = request.params.formUuid;
-  //       return await FormController.update(formUuid, request.payload, request);
-  //     },
-  //   },
+  {
+    method: 'PUT',
+    path: `/${apiVersion}/${svcName}/forms/{formUuid}`,
+    options: {
+      tags: ['api'],
+      description: 'Update a form by the supplied uuid.',
+      validate: {
+        params: {
+          formUuid: Joi.string().guid({version: 'uuidv4'})
+            .description('ID of the form'),
+        },
+        // we need the meta information from FormGetReesponse
+        // to see if this person edited based off the most recent version
+        payload: FormGetResponse,
+        failAction: failAction('request'),
+      },
+      response: {
+        status: {
+          200: Joi.any(),
+          400: Joi.any(),
+          403: Joi.any(),
+          404: Joi.any(),
+        },
+        failAction: failAction('response'),
+      },
+      log: { collect: true },
+      auth: false,
+    },
+    handler: async (request, h) => {
+      console.log('I AM CALLING PUT');
+      const formUuid = request.params.formUuid;
+      return await FormController.update(formUuid, request.payload, request);
+    },
+  },
   //   {
   //     method: 'DELETE',
   //     path: `/${apiVersion}/${svcName}/forms/{formUuid}`,
