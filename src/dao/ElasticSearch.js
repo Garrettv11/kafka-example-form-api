@@ -31,6 +31,6 @@ module.exports.updateDocumentWithIdInIndex = async (index, id, document) => {
   await client.update({
     index,
     id,
-    body: document,
+    body: {doc: document},
   });
 };

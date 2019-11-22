@@ -46,7 +46,7 @@ class FormCreateConsumer {
         }
         // everything has been submitted - commit
         // TODO: send a socket message to notify user of success
-        await this.consumer.commit();
+        await this.consumer.commitAsync();
       }
       catch (error) {
         console.log('error processing form:', error);

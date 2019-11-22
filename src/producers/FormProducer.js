@@ -57,19 +57,17 @@ class FormProducer {
     console.log('PRODUCER CALLING UPDATE FORM');
     const updateFormKM = new KeyedMessage(form.metadata.formUuid, JSON.stringify(form));
     const payloads = [
-      { topic: TOPIC_FORM_EDIT, messages: updateFormKM, partition: form.metadata.formUuid },
+      { topic: TOPIC_FORM_EDIT, messages: updateFormKM, partition: 0 }, // TODO key hash the partition
     ];
     if (this.isReady) {
       try {
         console.log('sending the payload for update');
-        await this.producer.sendAsync(payloads);
-        console.log('SENT the payload for update');
+        return await this.producer.sendAsync(payloads);
       }
       catch (error) {
         console.log('kafka commit error in form producer is :', error);
         throw error;
       }
-
     }
     else {
       // the exception handling can be improved, for example schedule this message to be tried again later on

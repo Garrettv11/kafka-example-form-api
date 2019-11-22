@@ -40,23 +40,24 @@ class FormUpdateConsumer {
     ));
 
     this.consumer.on('message', async message => {
-      console.log('the message being processed is :', JSON.stringify(message));
+
       try {
         const formToSave = JSON.parse(message.value);
-        const formToSaveWithoutMeta = JSON.parse(message.value);
-        delete formToSaveWithoutMeta.metadata;
+        const bodyToSave = JSON.parse(message.value);
+        delete bodyToSave.metadata;
         // we need to get the current version of the form
         const s3Key = formToSave.metadata.formUuid + '.json';
         const latestFormData = await FormDao.s3GetObject(config.aws.bucket, s3Key);
         let latestForm = latestFormData.Body.toString('utf-8');
         if (typeof latestForm !== 'object') latestForm = JSON.parse(latestForm);
-        const latestFormVersion = latestFormData.VersionId;
-        const formToSaveRevisionHash = makeRevisionHash(formToSaveWithoutMeta);
-        console.log('the latest form version is : ', latestFormVersion);
-        console.log('form to save revision hash is :', formToSaveRevisionHash);
-        console.log('latest version revision hash is :', latestForm.metadata.revisonHash);
+        let latestFormBody = latestFormData.Body.toString('utf-8');
+        if (typeof latestFormBody !== 'object') latestFormBody = JSON.parse(latestFormBody);
+        delete latestFormBody.metadata;
 
-        if (formToSaveRevisionHash === latestForm.metadata.revisonHash) {
+        const formToSaveRevisionHash = makeRevisionHash(JSON.stringify(bodyToSave));
+        const latestFormRevisionHash = makeRevisionHash(JSON.stringify(latestFormBody));
+
+        if (formToSaveRevisionHash === latestFormRevisionHash) {
           console.log('+++++ processing update for the second time');
           // the two forms have the same content, we could have failed to finish the save routine before
           // resend the latest form to ES
@@ -65,7 +66,9 @@ class FormUpdateConsumer {
         else {
           console.log('the version that we are saving off of is', formToSave.metadata.versionId);
           // there is a difference between the forms
-          if (latestFormVersion !== formToSave.metadata.versionId) {
+          console.log('latest form versionid is :', latestFormData.VersionId);
+          console.log('form to save versionid is :', formToSave.metadata.versionId);
+          if (latestFormData.VersionId !== formToSave.metadata.versionId) {
             // this edit was based on an old version and the user needs to 'pull'
             console.log('EDIT BASED ON OLD VERSION. REJECTING UPDATE!');
             // TODO: send socket message out to notify user of rejection
@@ -73,10 +76,13 @@ class FormUpdateConsumer {
           else {
             console.log('+++++ fresh update');
             // this is a good update push it to S3
+            // remove metadata versionId because it currently doesn't exist in our model for a saved form :(
+            // TODO: figure out what to do about this ^
+            delete formToSave.metadata.versionId;
             await FormDao.s3PutObject(config.aws.bucket, s3Key, formToSave);
             await ElasticSearchDao.updateDocumentWithIdInIndex('form', formToSave.metadata.formUuid, formToSave);
           }
-          // await this.consumer.commit();
+          return await this.consumer.commitAsync();
         }
       }
       catch (error) {

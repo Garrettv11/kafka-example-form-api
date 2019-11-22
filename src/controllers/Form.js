@@ -89,7 +89,7 @@ module.exports.findById = async (formUuid, request) => {
  */
 module.exports.update = async (formUuid, form, request) => {
   // to make it extra clear which form we're updating
-  form.metadata.formUuId = formUuid;
+  form.metadata.formUuid = formUuid;
   console.log('I AM CALLING UPDATE IN CONTROLLER');
-  await request.server.app.formProducer.updateForm(form);
+  return await request.server.app.formProducer.updateForm(form);
 };
