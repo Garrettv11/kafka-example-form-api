@@ -1,7 +1,7 @@
 const kafka = require('kafka-node');
 const KeyedMessage = kafka.KeyedMessage;
 const Promise = require('bluebird');
-const AuditLogModel = require(__dirname + '/../models/AuditLog.js');
+const AuditLogMessage = require(__dirname + '/../models/AuditLogMessage.js');
 const TOPIC_AUDITLOG_CREATE = 'AuditLogCreate';
 
 /**
@@ -32,26 +32,32 @@ class AuditLogProducer {
   }
   /**
   * @description Creates an audit log.
-  * @param {String} objectType - type of object being logged as changed
-  * @param {String} objectId - unique identifier of the object changed
+  * @param {String} recordType - type of object being logged as changed
+  * @param {String} recordId - unique identifier of the object changed
   * @param {String} author - entity that made the change
   * @param {Date} timestamp - timestamp describing when the change was made
+  * @param {Object} newRecord - object representing the new state of the object
+  * @param {Object} oldRecord - object representing the old state of the object
+  * @param {Object} isPartialUpdate - true if this update is a PUT rather than a total replacement
   */
-  async createAuditLog(objectType, objectId, author, timestamp) {
-    const auditEntry = {
-      object: objectType,
-      objectId,
+  async createAuditLog(recordType, recordId, author, timestamp, newRecord, oldRecord = null, isPartialUpdate = false) {
+    const auditMessage = {
+      recordType,
+      recordId,
       author,
       timestamp,
+      newRecord,
+      oldRecord,
+      isPartialUpdate,
     };
     // validate this against our model
-    const validationResult = AuditLogModel.validate();
+    const validationResult = AuditLogMessage.validate(auditMessage);
     if (validationResult.error) {
       const error = new Error(`invalid audit log structure: ${validationResult.error}`);
       throw error;
     }
-    const partitionKey = objectType + '-' + objectId;
-    const createAuditEntryKM = new KeyedMessage(partitionKey, JSON.stringify(auditEntry));
+    const partitionKey = recordType + '-' + recordId;
+    const createAuditEntryKM = new KeyedMessage(partitionKey, JSON.stringify(auditMessage));
     const payloads = [
       { topic: TOPIC_AUDITLOG_CREATE, messages: createAuditEntryKM },
     ];
@@ -60,7 +66,7 @@ class AuditLogProducer {
     }
     else {
       // the exception handling can be improved, for example schedule this message to be tried again later on
-      console.error('sorry, FormProducer is not ready yet, failed to produce message to Kafka.');
+      console.error('sorry, AuditLogProducer is not ready yet, failed to produce message to Kafka.');
     }
   }
 }
