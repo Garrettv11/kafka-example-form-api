@@ -57,7 +57,7 @@ class FormProducer {
     console.log('PRODUCER CALLING UPDATE FORM');
     const updateFormKM = new KeyedMessage(form.metadata.formUuid, JSON.stringify(form));
     const payloads = [
-      { topic: TOPIC_FORM_EDIT, messages: updateFormKM, partition: 0 }, // TODO key hash the partition
+      { topic: TOPIC_FORM_EDIT, messages: updateFormKM},
     ];
     if (this.isReady) {
       try {

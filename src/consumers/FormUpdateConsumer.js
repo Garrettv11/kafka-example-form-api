@@ -82,8 +82,8 @@ class FormUpdateConsumer {
             await FormDao.s3PutObject(config.aws.bucket, s3Key, formToSave);
             await ElasticSearchDao.updateDocumentWithIdInIndex('form', formToSave.metadata.formUuid, formToSave);
           }
-          return await this.consumer.commitAsync();
         }
+        return await this.consumer.commitAsync();
       }
       catch (error) {
         console.log('error updating form:', error);
