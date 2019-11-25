@@ -14,10 +14,12 @@ class FormCreateConsumer {
   * Create FormCreateConsumer.
   * @constructor
   * @param {String} kafkaHost - address of kafka server
+  * @param {AuditLogProducer} auditLogProducer - producer used to write to audit log topic
   */
-  constructor(kafkaHost) {
+  constructor(kafkaHost, auditLogProducer) {
     const client = new kafka.KafkaClient({kafkaHost});
     const Consumer = kafka.Consumer;
+    this.auditLogProducer = auditLogProducer;
     this.consumer = Promise.promisifyAll(new Consumer(
       client,
       [ { topic: TOPIC_FORM_CREATE } ],
@@ -46,6 +48,9 @@ class FormCreateConsumer {
         }
         // everything has been submitted - commit
         // TODO: send a socket message to notify user of success
+        
+        // we need to send the record to auditlog
+        await this.auditLogProducer
         await this.consumer.commitAsync();
       }
       catch (error) {

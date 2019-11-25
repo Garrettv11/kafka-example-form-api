@@ -4,6 +4,7 @@ const formRoutes = require(__dirname + '/src/routes/v2/studio/Form.js');
 const plugins = require(__dirname + '/src/plugins/plugins.js');
 const config = require(__dirname + '/config.js');
 const FormProducer = require(__dirname + '/src/producers/FormProducer.js');
+const AuditLogProducer = require(__dirname + '/src/consumers/AuditLogProducer.js');
 const FormCreateConsumer = require(__dirname + '/src/consumers/FormCreateConsumer.js');
 const FormUpdateConsumer = require(__dirname + '/src/consumers/FormUpdateConsumer.js');
 
@@ -20,8 +21,10 @@ const start = async () => {
     server.route(healthcheckRoute);
     server.route(formRoutes);
     server.app.formProducer = new FormProducer(config.kafkaServer);
-    server.app.formCreateConsumer = new FormCreateConsumer(config.kafkaServer);
-    server.app.formUpdateConsumer = new FormUpdateConsumer(config.kafkaServer);
+    const auditLogProducer = new AuditLogProducer(config.kafkaServer);
+    server.app.auditLogProducer = auditLogProducer;
+    server.app.formCreateConsumer = new FormCreateConsumer(config.kafkaServer, auditLogProducer);
+    server.app.formUpdateConsumer = new FormUpdateConsumer(config.kafkaServer, auditLogProducer);
     await server.start();
     console.log('Server running at:', server.info.uri);
     console.log('Swagger definition available at:', server.info.uri + '/swagger.json');

@@ -27,10 +27,12 @@ class FormUpdateConsumer {
   * Create FormUpdateConsumer.
   * @constructor
   * @param {String} kafkaHost - address of kafka server
+  * @param {AuditLogProducer} auditLogProducer - producer used to write to audit log topic
   */
-  constructor(kafkaHost) {
+  constructor(kafkaHost, auditLogProducer) {
     const client = new kafka.KafkaClient({kafkaHost});
     const Consumer = kafka.Consumer;
+    this.auditLogProducer = auditLogProducer;
     this.consumer = Promise.promisifyAll(new Consumer(
       client,
       [ { topic: TOPIC_FORM_EDIT } ],
