@@ -21,12 +21,12 @@ class AuditLogProducer {
     this.isReady = false;
 
     this.producer.on('ready', async () => {
-      console.log('Form producer is operational');
+      console.log('AuditLog producer is operational');
       this.isReady = true;
     });
 
     this.producer.on('error', err => {
-      console.log('Form Producer error is :', err);
+      console.log('AuditLog Producer error is :', err);
       throw err;
     });
   }
@@ -37,19 +37,34 @@ class AuditLogProducer {
   * @param {String} author - entity that made the change
   * @param {Date} timestamp - timestamp describing when the change was made
   * @param {Object} newRecord - object representing the new state of the object
+  * @param {String} newRecordVersionId - version id of the new record
   * @param {Object} oldRecord - object representing the old state of the object
-  * @param {Object} isPartialUpdate - true if this update is a PUT rather than a total replacement
+  * @param {String} oldRecordVersionId - version id of the old record
+  * @param {Boolean} isPartialUpdate - true if this update is a PUT rather than a total replacement
   */
-  async createAuditLog(recordType, recordId, author, timestamp, newRecord, oldRecord = null, isPartialUpdate = false) {
+  async createAuditLog(
+    recordType,
+    recordId,
+    author,
+    timestamp,
+    newRecord,
+    newRecordVersionId,
+    oldRecord = null,
+    oldRecordVersionId = null,
+    isPartialUpdate = false
+  ) {
     const auditMessage = {
       recordType,
       recordId,
       author,
       timestamp,
       newRecord,
-      oldRecord,
+      newRecordVersionId,
       isPartialUpdate,
     };
+    if (oldRecord) auditMessage.oldRecord = oldRecord;
+    if (oldRecordVersionId) auditMessage.oldRecordVersionId = oldRecordVersionId;
+
     // validate this against our model
     const validationResult = AuditLogMessage.validate(auditMessage);
     if (validationResult.error) {

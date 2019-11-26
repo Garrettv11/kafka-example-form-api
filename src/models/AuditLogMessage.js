@@ -13,9 +13,13 @@ const AuditLogMessage = Joi.object().keys({
     .description('date and time the change occurred'),
   newRecord: Joi.object().required()
     .description('the new state of the record'),
+  newRecordVersionId: Joi.string().required()
+    .description('versionId of the newly modified record'),
   oldRecord: Joi.object().optional()
     .description('The old state of the record. Not present if the record is being newly created'),
-  isPartialUpdate: Joi.date().iso().required()
+  oldRecordVersionId: Joi.string().optional()
+    .description('versionId of the old record'),
+  isPartialUpdate: Joi.boolean().optional()
     .description('date and time the change occurred'),
 })
   .description('Audit Log Message ')

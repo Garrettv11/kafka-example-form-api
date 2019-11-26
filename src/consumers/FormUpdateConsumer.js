@@ -85,6 +85,32 @@ class FormUpdateConsumer {
             await ElasticSearchDao.updateDocumentWithIdInIndex('form', formToSave.metadata.formUuid, formToSave);
           }
         }
+        // need to get the revision before
+        const revisionHistory = await FormDao.s3ObjectVersions(config.aws.bucket, s3Key);
+        const versions = revisionHistory.Versions;
+        let previousVersionId;
+        for (const i in versions) {
+          const version = versions[i];
+          if (!version.IsLatest) {
+            previousVersionId = version.VersionId;
+            break;
+          }
+        }
+        const oldVersionData = await FormDao.s3GetObject(config.aws.bucket, s3Key, previousVersionId);
+        let oldVersionForm = oldVersionData.Body.toString('utf-8');
+        if (typeof oldVersionForm !== 'object') oldVersionForm = JSON.parse(oldVersionForm);
+        console.log('old version form is :', oldVersionForm);
+        await this.auditLogProducer.createAuditLog(
+          'Form',
+          formToSave.metadata.formUuid,
+          formToSave.metadata.author,
+          formToSave.metadata.timestamp,
+          latestForm,
+          latestFormData.VersionId,
+          oldVersionForm,
+          previousVersionId,
+        );
+
         return await this.consumer.commitAsync();
       }
       catch (error) {

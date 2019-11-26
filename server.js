@@ -4,7 +4,7 @@ const formRoutes = require(__dirname + '/src/routes/v2/studio/Form.js');
 const plugins = require(__dirname + '/src/plugins/plugins.js');
 const config = require(__dirname + '/config.js');
 const FormProducer = require(__dirname + '/src/producers/FormProducer.js');
-const AuditLogProducer = require(__dirname + '/src/consumers/AuditLogProducer.js');
+const AuditLogProducer = require(__dirname + '/src/producers/AuditLogProducer.js');
 const FormCreateConsumer = require(__dirname + '/src/consumers/FormCreateConsumer.js');
 const FormUpdateConsumer = require(__dirname + '/src/consumers/FormUpdateConsumer.js');
 

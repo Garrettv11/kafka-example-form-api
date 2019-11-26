@@ -8,13 +8,15 @@ module.exports = {
   * @description Gets form object from S3 bucket
   * @param {String} s3Bucket - Bucket where form is located
   * @param {String} s3Key - Name assigned to the object, used to locate the object in bucket
+  * @param {String} versionId - optional version of the object to fetch
   * @return {Promise}
   */
-  s3GetObject: async (s3Bucket, s3Key) => {
+  s3GetObject: async (s3Bucket, s3Key, versionId) => {
     const s3Params = {
       Bucket: s3Bucket,
       Key: s3Key,
     };
+    if (versionId) s3Params.VersionId = versionId;
     try {
       const data = await s3.getObject(s3Params).promise();
       return data;
@@ -98,5 +100,20 @@ module.exports = {
         throw error;
       }
     }
+  },
+  /**
+  * @description Gets the last couple versions of a file with the s3 key
+  * @param {String} s3Bucket - Bucket where form is located
+  * @param {String} s3Key - Name assigned to the object, used to locate the object in bucket
+  * @return {Object} response containing version metadata of the file
+  */
+  s3ObjectVersions: async (s3Bucket, s3Key) => {
+    const s3Params = {
+      Bucket: s3Bucket,
+      Prefix: s3Key,
+    };
+    const versionDetails = await s3.listObjectVersions(s3Params).promise();
+    console.log('the version details are :', versionDetails);
+    return versionDetails;
   },
 };
