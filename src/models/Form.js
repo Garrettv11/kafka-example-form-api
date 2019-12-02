@@ -17,6 +17,8 @@ const FormMetaData = Joi.object().keys({
     .description('Object version from s3'),
   revisionHash: Joi.string().required()
     .description('cryptographic hash of form contents to prevent saving without changes'),
+  previousVersionId: Joi.string().optional()
+    .description('previous version id of the document'),
 })
   .description('System generated metadata for the form object')
   .label('FormMetaData');

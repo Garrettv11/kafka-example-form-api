@@ -49,7 +49,7 @@ class FormUpdateConsumer {
         delete bodyToSave.metadata;
         // we need to get the current version of the form
         const s3Key = formToSave.metadata.formUuid + '.json';
-        const latestFormData = await FormDao.s3GetObject(config.aws.bucket, s3Key);
+        let latestFormData = await FormDao.s3GetObject(config.aws.bucket, s3Key);
         let latestForm = latestFormData.Body.toString('utf-8');
         if (typeof latestForm !== 'object') latestForm = JSON.parse(latestForm);
         let latestFormBody = latestFormData.Body.toString('utf-8');
@@ -81,21 +81,17 @@ class FormUpdateConsumer {
             // remove metadata versionId because it currently doesn't exist in our model for a saved form :(
             // TODO: figure out what to do about this ^
             delete formToSave.metadata.versionId;
+            formToSave.metadata.previousVersionId = latestFormData.VersionId;
             await FormDao.s3PutObject(config.aws.bucket, s3Key, formToSave);
             await ElasticSearchDao.updateDocumentWithIdInIndex('form', formToSave.metadata.formUuid, formToSave);
           }
         }
-        // need to get the revision before
-        const revisionHistory = await FormDao.s3ObjectVersions(config.aws.bucket, s3Key);
-        const versions = revisionHistory.Versions;
-        let previousVersionId;
-        for (const i in versions) {
-          const version = versions[i];
-          if (!version.IsLatest) {
-            previousVersionId = version.VersionId;
-            break;
-          }
-        }
+        // pull the latest form data again to ensure that the last version id is the one we're looking for
+        latestFormData = await FormDao.s3GetObject(config.aws.bucket, s3Key);
+        latestForm = latestFormData.Body.toString('utf-8');
+        if (typeof latestForm !== 'object') latestForm = JSON.parse(latestForm);
+
+        const previousVersionId = latestForm.metadata.previousVersionId;
         const oldVersionData = await FormDao.s3GetObject(config.aws.bucket, s3Key, previousVersionId);
         let oldVersionForm = oldVersionData.Body.toString('utf-8');
         if (typeof oldVersionForm !== 'object') oldVersionForm = JSON.parse(oldVersionForm);
