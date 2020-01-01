@@ -18,7 +18,7 @@ config['dev-docker'] = {
     host: '0.0.0.0',
     port: 6045,
   },
-  kafkaServer: 'kafka:9092',
+  kafkaServer: 'kafka1:9092',
   aws: {
     bucket: 'form-bucket',
     region: 'us-west-2',
